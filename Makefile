@@ -1,20 +1,24 @@
-path_infra:
-	cd infra
+CURRENT_DIR=$(shell pwd)/infra
+COMMAND_TERRAFORM=cd $(CURRENT_DIR) && terraform
+COMMAND_AWS=cd $(CURRENT_DIR) && aws
 
-tf_init: path_infra
-	terraform init
+current_infra:
+	cd $(CURRENT_DIR)
 
-tf_destroy: path_infra
-	terraform destroy
+tf_init:
+	$(COMMAND_TERRAFORM) init
 
-tf_fmt: path_infra
-	terraform fmt
+tf_destroy:
+	$(COMMAND_TERRAFORM) destroy
 
-tf_validate: tf_fmt
-	terraform validate
+tf_fmt:
+	$(COMMAND_TERRAFORM) fmt
 
-tf_apply: tf_validate path_infra
-	terraform apply
+tf_validate:
+	$(COMMAND_TERRAFORM) validate
 
-aws_list_buckets: path_infra
-	aws s3api list-buckets --query "Buckets[].Name" --endpoint-url=http://localhost:4566
+tf_apply:
+	$(COMMAND_TERRAFORM) apply
+
+aws_list_buckets:
+	${COMMAND_AWS} s3api list-buckets --query "Buckets[].Name" --endpoint-url=http://localhost:4566
