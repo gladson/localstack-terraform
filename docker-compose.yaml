@@ -1,0 +1,26 @@
+version: "3.1"
+
+services:
+  localstack:
+    container_name: localstack
+    hostname: localstack
+    image: localstack-dev
+    build:
+      context: ./dockerfiles
+      dockerfile: ./localstack.dockerfile
+      args:
+        - TERRAFORM_VERSION=${TERRAFORM_VERSION:-1.5.3}
+        # - AWS_ACCESS_KEY_ID=${TERRAFORM_AWS_ACCESS_KEY_ID:-"aws_access_key"}
+        # - AWS_SECRET_ACCESS_KEY=${TERRAFORM_AWS_SECRET_ACCESS_KEY:-"aws_secret_access_key"}
+        # - AWS_SESSION_TOKEN=${TERRAFORM_AWS_SESSION_TOKEN:-"aws_session_token"}
+        - AWS_DEFAULT_REGION=${LOCALSTACK_AWS_DEFAULT_REGION:-"us-east-1"}
+        - EDGE_PORT=${LOCALSTACK_EDGE_PORT:-4566}
+        - SERVICES=${LOCALSTACK_SERVICES:-"lambda,s3,sns,sqs"}
+    env_file:
+      - ${ENV}
+    ports:
+      - "${LOCALSTACK_PORTS:-4566-4583}:${LOCALSTACK_PORTS:-4566-4583}"
+    volumes:
+      - .:/home/localstack/app
+      - "${LOCALSTACK_TEMPDIR:-/tmp/localstack}:/tmp/localstack"
+      - "/var/run/docker.sock:/var/run/docker.sock"
